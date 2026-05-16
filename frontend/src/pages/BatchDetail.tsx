@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { api } from "../api/client";
@@ -59,17 +60,22 @@ export default function BatchDetail() {
   const consume = useMutation({
     mutationFn: async (n: number) =>
       (await api.post(`/batches/${id}/consume/`, { quantity: n })).data,
-    onSuccess: () => {
+    onSuccess: (_, n) => {
       qc.invalidateQueries({ queryKey: ["batch", id] });
       qc.invalidateQueries({ queryKey: ["batches"] });
       setQty("");
+      toast.success(`${n} miqdor ishlatildi`);
     },
+    onError: () => toast.error("Yetarli miqdor yo'q"),
   });
 
   const waste = useMutation({
     mutationFn: async () =>
       (await api.post(`/batches/${id}/waste/`, { note: "Q chegaradan past" })).data,
-    onSuccess: () => navigate("/inventory"),
+    onSuccess: () => {
+      toast.success("Yo'qotish sifatida belgilandi");
+      navigate("/inventory");
+    },
   });
 
   if (batch.isLoading) return <p className="text-gray-500">Yuklanmoqda...</p>;

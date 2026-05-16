@@ -18,6 +18,7 @@ api_v1 = [
     path("", include("apps.sensors.urls")),
     path("", include("apps.alerts.urls")),
     path("", include("apps.reports.urls")),
+    path("", include("apps.math_engine.urls")),
 ]
 
 urlpatterns = [

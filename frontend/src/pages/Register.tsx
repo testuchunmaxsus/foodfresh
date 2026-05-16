@@ -1,7 +1,9 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
 import { api } from "../api/client";
+import AuthLayout from "../components/AuthLayout";
 import { useAuth } from "../store/auth";
 
 export default function Register() {
@@ -12,7 +14,7 @@ export default function Register() {
     last_name: "",
     phone: "",
   });
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const setTokens = useAuth((s) => s.setTokens);
   const navigate = useNavigate();
 
@@ -21,7 +23,7 @@ export default function Register() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setLoading(true);
     try {
       await api.post("/auth/register/", form);
       const { data } = await api.post("/auth/login/", {
@@ -29,38 +31,73 @@ export default function Register() {
         password: form.password,
       });
       setTokens(data.access, data.refresh);
+      toast.success("Hisob yaratildi!");
       navigate("/");
     } catch (err: any) {
-      const msg = err.response?.data ? JSON.stringify(err.response.data) : "Xato.";
-      setError(msg);
+      const detail = err.response?.data;
+      const msg = detail ? Object.values(detail).flat()[0] || "Xato" : "Xato";
+      toast.error(String(msg));
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <form
-        onSubmit={onSubmit}
-        className="bg-white rounded-xl shadow p-8 w-full max-w-md space-y-3"
-      >
-        <h1 className="text-2xl font-bold text-brand">Ro'yxatdan o'tish</h1>
-        <div className="grid grid-cols-2 gap-3">
-          <input placeholder="Ism" value={form.first_name} onChange={onChange("first_name")} className="border rounded-md px-3 py-2" />
-          <input placeholder="Familiya" value={form.last_name} onChange={onChange("last_name")} className="border rounded-md px-3 py-2" />
+    <AuthLayout>
+      <form onSubmit={onSubmit} className="space-y-4">
+        <div>
+          <h2 className="text-2xl font-bold">Ro'yxatdan o'tish</h2>
+          <p className="text-sm text-gray-500 mt-1">Restoraningizni ulang va boshlang</p>
         </div>
-        <input type="email" required placeholder="Email" value={form.email} onChange={onChange("email")} className="w-full border rounded-md px-3 py-2" />
-        <input placeholder="Telefon" value={form.phone} onChange={onChange("phone")} className="w-full border rounded-md px-3 py-2" />
-        <input type="password" required placeholder="Parol" value={form.password} onChange={onChange("password")} className="w-full border rounded-md px-3 py-2" />
-        {error && <p className="text-sm text-red-600 break-all">{error}</p>}
-        <button className="w-full bg-brand text-white py-2 rounded-md hover:bg-brand-dark">
-          Davom etish
+        <div className="grid grid-cols-2 gap-3">
+          <input
+            placeholder="Ism"
+            value={form.first_name}
+            onChange={onChange("first_name")}
+            className="border rounded-md px-3 py-2"
+          />
+          <input
+            placeholder="Familiya"
+            value={form.last_name}
+            onChange={onChange("last_name")}
+            className="border rounded-md px-3 py-2"
+          />
+        </div>
+        <input
+          type="email"
+          required
+          placeholder="Email"
+          value={form.email}
+          onChange={onChange("email")}
+          className="w-full border rounded-md px-3 py-2"
+        />
+        <input
+          placeholder="Telefon (+998 ...)"
+          value={form.phone}
+          onChange={onChange("phone")}
+          className="w-full border rounded-md px-3 py-2"
+        />
+        <input
+          type="password"
+          required
+          placeholder="Parol (kamida 8 belgi)"
+          value={form.password}
+          onChange={onChange("password")}
+          className="w-full border rounded-md px-3 py-2"
+        />
+        <button
+          disabled={loading}
+          className="w-full bg-brand text-white py-2.5 rounded-md hover:bg-brand-dark transition disabled:opacity-60 font-medium"
+        >
+          {loading ? "Yaratilmoqda..." : "Davom etish"}
         </button>
         <p className="text-sm text-center text-gray-500">
           Hisobingiz bormi?{" "}
-          <Link to="/login" className="text-brand-dark font-medium">
+          <Link to="/login" className="text-brand-dark font-medium hover:underline">
             Kirish
           </Link>
         </p>
       </form>
-    </div>
+    </AuthLayout>
   );
 }
