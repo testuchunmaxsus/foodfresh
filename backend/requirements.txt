@@ -13,6 +13,7 @@ django-celery-beat==2.6.0
 numpy==1.26.4
 scipy==1.13.1
 pandas==2.2.2
+Pillow==10.4.0
 python-dotenv==1.0.1
 gunicorn==22.0.0
 pytest==8.2.2
