@@ -14,6 +14,10 @@ RAILWAY_DOMAIN = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
 if RAILWAY_DOMAIN and RAILWAY_DOMAIN not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(RAILWAY_DOMAIN)
 
+for _host in ("healthcheck.railway.app", ".railway.app"):
+    if _host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_host)
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
