@@ -34,3 +34,5 @@ dist/
 
 # Docker
 .docker-data/
+backend/tmp.db
+*.db
