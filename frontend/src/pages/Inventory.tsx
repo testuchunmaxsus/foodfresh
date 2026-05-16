@@ -18,7 +18,8 @@ export default function Inventory() {
   const { data, isLoading } = useQuery({
     queryKey: ["batches"],
     queryFn: async () =>
-      (await api.get<{ results: Batch[] }>("/batches/?status=active")).data,
+      (await api.get<{ results: Batch[] }>("/batches/?status=active&ordering=Q_current")).data,
+    refetchInterval: 60_000,
   });
 
   const batches = data?.results ?? [];
@@ -48,11 +49,12 @@ export default function Inventory() {
                 <th className="px-4 py-3">Miqdor</th>
                 <th className="px-4 py-3">Sifat (Q)</th>
                 <th className="px-4 py-3">Sana</th>
+                <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody>
               {batches.map((b) => (
-                <tr key={b.id} className="border-t">
+                <tr key={b.id} className="border-t hover:bg-gray-50">
                   <td className="px-4 py-3 font-medium">{b.product_name}</td>
                   <td className="px-4 py-3">{b.storage_name}</td>
                   <td className="px-4 py-3">
@@ -73,6 +75,14 @@ export default function Inventory() {
                   </td>
                   <td className="px-4 py-3 text-gray-500">
                     {new Date(b.received_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <Link
+                      to={`/inventory/${b.id}`}
+                      className="text-brand-dark hover:underline text-xs"
+                    >
+                      Tafsilot →
+                    </Link>
                   </td>
                 </tr>
               ))}

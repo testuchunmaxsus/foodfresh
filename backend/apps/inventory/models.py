@@ -37,6 +37,9 @@ class ProductTemplate(models.Model):
     shelf_life_days_at_4C = models.PositiveIntegerField(default=7)
     image = models.ImageField(upload_to="product_templates/", null=True, blank=True)
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self) -> str:
         return self.name
 

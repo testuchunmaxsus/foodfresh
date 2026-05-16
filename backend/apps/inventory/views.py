@@ -90,14 +90,36 @@ class DashboardSummaryView(APIView):
     def get(self, request):
         qs = Batch.objects.filter(
             restaurant__owner=request.user, status=Batch.Status.ACTIVE
-        )
+        ).select_related("product_template")
         critical = qs.filter(Q_current__lte=F("product_template__Q_critical")).count()
         total_value = qs.aggregate(
             v=Sum(F("quantity_current") * F("unit_price"))
         )["v"] or 0
+
+        buckets = {"excellent": 0, "good": 0, "warning": 0, "critical": 0}
+        for b in qs:
+            q = b.Q_current
+            if q >= 0.85:
+                buckets["excellent"] += 1
+            elif q >= 0.70:
+                buckets["good"] += 1
+            elif q >= b.product_template.Q_critical:
+                buckets["warning"] += 1
+            else:
+                buckets["critical"] += 1
+
+        from apps.alerts.models import Alert
+        recent_alerts = Alert.objects.filter(
+            restaurant__owner=request.user
+        ).order_by("-created_at")[:5].values(
+            "id", "type", "severity", "message", "created_at", "read_at"
+        )
+
         return Response({
             "active_batches": qs.count(),
             "critical_batches": critical,
             "total_inventory_value": float(total_value),
+            "quality_distribution": buckets,
+            "recent_alerts": list(recent_alerts),
             "generated_at": timezone.now(),
         })

@@ -82,6 +82,7 @@ class Command(BaseCommand):
             s = Storage.objects.create(
                 restaurant=restaurant, name=name, type=kind,
                 target_temp_min=t_min, target_temp_max=t_max, current_temp=current,
+                simulate_sensor=True,
             )
             storage_objs.append(s)
 

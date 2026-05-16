@@ -22,4 +22,8 @@ app.conf.beat_schedule = {
         "task": "apps.math_engine.tasks.daily_fifo_recommendation",
         "schedule": crontab(hour=6, minute=0),
     },
+    "simulate-sensors-30s": {
+        "task": "apps.sensors.tasks.simulate_sensors",
+        "schedule": 30.0,
+    },
 }

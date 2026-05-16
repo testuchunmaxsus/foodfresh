@@ -20,6 +20,9 @@ class Restaurant(models.Model):
     subscription_plan = models.CharField(max_length=16, choices=Plan.choices, default=Plan.FREE)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self) -> str:
         return self.name
 
@@ -37,6 +40,13 @@ class Storage(models.Model):
     target_temp_max = models.FloatField(default=4)
     current_temp = models.FloatField(null=True, blank=True)
     sensor_id = models.CharField(max_length=64, blank=True)
+    simulate_sensor = models.BooleanField(
+        default=False,
+        help_text="Generate synthetic sensor readings every 30s.",
+    )
+
+    class Meta:
+        ordering = ["restaurant_id", "name"]
 
     def __str__(self) -> str:
         return f"{self.restaurant.name} / {self.name}"

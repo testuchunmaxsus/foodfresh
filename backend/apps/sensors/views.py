@@ -11,11 +11,16 @@ from .serializers import IngestSerializer, TemperatureReadingSerializer
 class TemperatureReadingViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TemperatureReadingSerializer
     filterset_fields = ["storage"]
+    ordering_fields = ["recorded_at", "temperature"]
+    pagination_class = None
 
     def get_queryset(self):
         return TemperatureReading.objects.filter(
             storage__restaurant__owner=self.request.user
         )
+
+    def filter_queryset(self, queryset):
+        return super().filter_queryset(queryset)[:500]
 
 
 class SensorIngestView(APIView):
