@@ -61,12 +61,25 @@ Birinchi deploy avtomatik:
 
 Buyruq `backend/railway.json` da `startCommand` sifatida yozilgan.
 
-Birinchi marta superuser yaratish — Railway shell'idan:
+Pre-deploy buyruq avtomatik:
 
-```bash
-python manage.py createsuperuser
-python scripts/seed_product_templates.py
+- `migrate`
+- `seed_products` — 6 ta mahsulot shabloni (Arrenius parametrlari bilan)
+- `create_admin` — Django superuser
+- `seed_demo` — demo owner + restoran + 3 ta sovutgich + 7 ta partiya + harorat tarixi
+
+Kreditsiallarni Variables'da o'rnatish (ixtiyoriy):
+
 ```
+DJANGO_SUPERUSER_EMAIL=admin@yourdomain.com
+DJANGO_SUPERUSER_PASSWORD=<kuchli parol>
+DEMO_USER_EMAIL=demo@yourdomain.com
+DEMO_USER_PASSWORD=<demo parol>
+```
+
+Default: `admin@freshfood.uz` / `admin12345`, `demo@freshfood.uz` / `demo12345`. **Production'da albatta o'zgartiring.**
+
+Buyruqlar idempotent — har deploy'da xavfsiz qayta ishlaydi: superuser parolini yangilaydi, demo restorani allaqachon bo'lsa o'tkazib yuboradi. Demo'ni qayta yaratish: `python manage.py seed_demo --reset` Railway shell'idan.
 
 ### 1.6. Celery worker va beat (ixtiyoriy, faqat asinxron vazifalar kerak bo'lganda)
 

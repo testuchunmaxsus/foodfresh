@@ -23,9 +23,28 @@ Keyin:
 
 ```bash
 docker compose exec backend python manage.py migrate
-docker compose exec backend python manage.py createsuperuser
-docker compose exec backend python scripts/seed_product_templates.py
+docker compose exec backend python manage.py seed_products
+docker compose exec backend python manage.py create_admin
+docker compose exec backend python manage.py seed_demo
 ```
+
+Yoki barchasini bir buyruq bilan:
+
+```bash
+docker compose exec backend python manage.py migrate \
+  && docker compose exec backend python manage.py seed_products \
+  && docker compose exec backend python manage.py create_admin \
+  && docker compose exec backend python manage.py seed_demo
+```
+
+Default kreditsiallar (env'dan override qilish mumkin):
+
+| | Login | Parol |
+|---|---|---|
+| Admin (Django admin) | `admin@freshfood.uz` | `admin12345` |
+| Demo owner (frontend) | `demo@freshfood.uz` | `demo12345` |
+
+Env'dan: `DJANGO_SUPERUSER_EMAIL`, `DJANGO_SUPERUSER_PASSWORD`, `DEMO_USER_EMAIL`, `DEMO_USER_PASSWORD`.
 
 - API: http://localhost:8000/api/v1/
 - API docs: http://localhost:8000/api/docs/
