@@ -71,6 +71,7 @@ Batafsil:
 - [docs/architecture.md](docs/architecture.md)
 - [docs/math-model.md](docs/math-model.md)
 - [docs/api.md](docs/api.md)
+- [docs/deployment.md](docs/deployment.md) — Railway + Vercel deploy qo'llanmasi
 
 ## Sprint 1–2 doirasi (MVP)
 
